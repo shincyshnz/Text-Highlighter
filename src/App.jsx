@@ -56,12 +56,10 @@ function App() {
     setMatchRegex(htmlText.match(regex));
 
     const highlighted = htmlText.replace(regex, (match, index) => {
-      if (count === currentIndex) {
-        console.log(currentIndex, "current");
-        highlightedText = `<span class="highlight selected">${match}</span>`;
-      } else {
-        highlightedText = `<span class="highlight">${match}</span>`;
-      }
+      highlightedText =
+        count === currentIndex
+          ? `<span class="highlight selected">${match}</span>`
+          : `<span class="highlight">${match}</span>`;
       count++;
       return highlightedText;
     });
@@ -71,18 +69,18 @@ function App() {
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex += 1));
     if (currentIndex >= matchRegex.length - 1) {
       setCurrentIndex(0);
     }
+    setCurrentIndex((prevIndex) => (prevIndex += 1));
     getHighlightedText(highlight);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex -= 1));
     if (currentIndex === 0) {
       setCurrentIndex(matchRegex.length - 1);
     }
+    setCurrentIndex((prevIndex) => (prevIndex -= 1));
     getHighlightedText(highlight);
   };
 
