@@ -18,7 +18,7 @@ function App() {
     return () => {
       document.removeEventListener("keydown", detectKeydown, true);
     };
-  }, [currentIndex]);
+  }, []);
 
   const clearHighlight = () => {
     setMatchCount(0);
@@ -38,12 +38,13 @@ function App() {
   };
 
   const handleChange = (e) => {
+    clearHighlight();
     const value = e.target.value;
+
     if (!value) {
       clearHighlight();
       return;
     }
-
     setHighlight(value);
     getHighlightedText(value);
   };
@@ -51,36 +52,52 @@ function App() {
   const getHighlightedText = (highlightText) => {
     // replace text with highlighted text
     let count = 0;
-    let highlightedText;
+    let highlighted;
     const regex = new RegExp(`(?![^<>]*>)(${highlightText})`, "gi");
     setMatchRegex(htmlText.match(regex));
+    if (matchRegex) {
+      let formattedText;
+      highlighted = htmlText.replace(regex, (match, index) => {
+        // formattedText =
+        //   count === currentIndex
+        //     ? `<span class="highlight selected">${match}</span>`
+        //     : `<span class="highlight">${match}</span>`;
+        // count++;
+        // return formattedText;
+        console.log(currentIndex, "before checking ");
 
-    const highlighted = htmlText.replace(regex, (match, index) => {
-      highlightedText =
-        count === currentIndex
-          ? `<span class="highlight selected">${match}</span>`
-          : `<span class="highlight">${match}</span>`;
-      count++;
-      return highlightedText;
-    });
+        if (count === currentIndex) {
+          formattedText = `<span class="highlight selected">${
+            match + currentIndex
+          }</span>`;
+          // currentIndex === 0 && setCurrentIndex(1);
+          console.log(currentIndex, "==inside match");
+        } else {
+          formattedText = `<span class="highlight">${match}</span>`;
+        }
+        count++;
+        currentIndex === 0 && setCurrentIndex(1);
+        return formattedText;
+      });
 
-    setMatchCount(count);
-    htmlRef.current.innerHTML = highlighted;
+      setMatchCount(count);
+      htmlRef.current.innerHTML = highlighted;
+    }
   };
 
   const handleNext = () => {
-    if (currentIndex >= matchRegex.length - 1) {
+    setCurrentIndex((prevIndex) => (prevIndex += 1));
+    if (currentIndex >= matchRegex.length) {
       setCurrentIndex(0);
     }
-    setCurrentIndex((prevIndex) => (prevIndex += 1));
     getHighlightedText(highlight);
   };
 
   const handlePrev = () => {
-    if (currentIndex === 0) {
+    setCurrentIndex((prevIndex) => (prevIndex -= 1));
+    if (currentIndex <= 1) {
       setCurrentIndex(matchRegex.length - 1);
     }
-    setCurrentIndex((prevIndex) => (prevIndex -= 1));
     getHighlightedText(highlight);
   };
 
