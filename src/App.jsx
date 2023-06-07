@@ -58,23 +58,10 @@ function App() {
     if (matchRegex) {
       let formattedText;
       highlighted = htmlText.replace(regex, (match, index) => {
-        // formattedText =
-        //   count === currentIndex
-        //     ? `<span class="highlight selected">${match}</span>`
-        //     : `<span class="highlight">${match}</span>`;
-        // count++;
-        // return formattedText;
-        console.log(currentIndex, "before checking ");
-
-        if (count === currentIndex) {
-          formattedText = `<span class="highlight selected">${
-            match + currentIndex
-          }</span>`;
-          // currentIndex === 0 && setCurrentIndex(1);
-          console.log(currentIndex, "==inside match");
-        } else {
-          formattedText = `<span class="highlight">${match}</span>`;
-        }
+        formattedText =
+          count === currentIndex
+            ? `<span class="highlight selected">${match}</span>`
+            : `<span class="highlight">${match}</span>`;
         count++;
         currentIndex === 0 && setCurrentIndex(1);
         return formattedText;
