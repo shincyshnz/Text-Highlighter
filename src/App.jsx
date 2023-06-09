@@ -14,17 +14,10 @@ function App() {
   useEffect(() => {
     document.addEventListener("keydown", detectKeydown, true);
     setHtmlText(htmlRef.current.innerHTML);
-
     return () => {
       document.removeEventListener("keydown", detectKeydown, true);
     };
-  }, []);
-
-  const clearHighlight = () => {
-    setMatchCount(0);
-    setCurrentIndex(0);
-    htmlRef.current.innerHTML = htmlText;
-  };
+  }, [currentIndex]);
 
   const isOpenInput = () => {
     setShowInput((prev) => (prev = !prev));
@@ -37,20 +30,8 @@ function App() {
     }
   };
 
-  const handleChange = (e) => {
-    clearHighlight();
-    const value = e.target.value;
-
-    if (!value) {
-      clearHighlight();
-      return;
-    }
-    setHighlight(value);
-    getHighlightedText(value);
-  };
-
   const getHighlightedText = (highlightText) => {
-    // replace text with highlighted text
+    setCurrentIndex(0);
     let count = 0;
     let highlighted;
     const regex = new RegExp(`(?![^<>]*>)(${highlightText})`, "gi");
@@ -58,12 +39,12 @@ function App() {
     if (matchRegex) {
       let formattedText;
       highlighted = htmlText.replace(regex, (match, index) => {
-        formattedText =
-          count === currentIndex
-            ? `<span class="highlight selected">${match}</span>`
-            : `<span class="highlight">${match}</span>`;
+        // formattedText =
+        //   count === currentIndex
+        //     ? `<span class="highlight selected">${match}</span>`
+        //     : `<span class="highlight">${match}</span>`;
+        formattedText = `<span class="highlight">${match}</span>`;
         count++;
-        currentIndex === 0 && setCurrentIndex(1);
         return formattedText;
       });
 
@@ -72,23 +53,62 @@ function App() {
     }
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex += 1));
-    if (currentIndex >= matchRegex.length) {
-      setCurrentIndex(0);
-    }
-    getHighlightedText(highlight);
+  const getSelectedHighlightedText = () => {
+    const highlightedNodes = htmlRef.current.querySelectorAll(".highlight");
+    console.log(highlightedNodes, "===Nodes");
+
+    [...highlightedNodes].forEach((node, index) => {
+      node.className = "highlight";
+      console.log(currentIndex, "===currentIndex");
+
+      if (currentIndex === index) {
+        node.className = "highlight selected";
+      }
+    });
   };
 
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex -= 1));
-    if (currentIndex <= 1) {
-      setCurrentIndex(matchRegex.length - 1);
+  const handleChange = (e) => {
+    // clearHighlight();
+    // setCurrentIndex(0);
+    const value = e.target.value;
+
+    if (value === "" || value === null) {
+      setMatchCount(0);
+      htmlRef.current.innerHTML = htmlText;
+      return;
     }
-    getHighlightedText(highlight);
+    setHighlight(value);
+    // currentIndex <= 0 && setCurrentIndex(1);
+    getHighlightedText(value);
+    // handleNext();
   };
 
-  // console.log(matchRegex.length);
+  // const handleNext = () => {
+  //   if (currentIndex >= matchCount - 1) {
+  //     setCurrentIndex(0);
+  //   }
+  //   setCurrentIndex((prevIndex) => ++prevIndex);
+  //   // getHighlightedText(highlight);
+  //   getSelectedHighlightedText(index);
+  // };
+
+  // const handlePrev = () => {
+  //   console.log(currentIndex);
+
+  //   if (currentIndex <= 0) {
+  //     setCurrentIndex(matchCount - 1);
+  //   }
+
+  //   setCurrentIndex((prevIndex) => --prevIndex);
+  //   console.log(currentIndex);
+
+  //   // getHighlightedText(highlight);
+  //   getSelectedHighlightedText();
+  // };
+
+  // console.log(htmlText);
+  // console.log(currentIndex);
+  // console.log(matchCount);
 
   return (
     <>
@@ -98,8 +118,10 @@ function App() {
           handleChange={handleChange}
           matchCount={matchCount}
           currentIndex={currentIndex}
-          handleNext={handleNext}
-          handlePrev={handlePrev}
+          setCurrentIndex={setCurrentIndex}
+          getSelectedHighlightedText={getSelectedHighlightedText}
+          // handleNext={handleNext}
+          // handlePrev={handlePrev}
         />
       )}
       <div className="main-container" ref={htmlRef}>
