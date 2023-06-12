@@ -2,45 +2,27 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Input } from "./components/Input/Input";
 
-function App() {
+function AppCopy() {
   const [showInput, setShowInput] = useState(false);
   const [htmlText, setHtmlText] = useState("");
   const [highlight, setHighlight] = useState("");
   const [matchRegex, setMatchRegex] = useState([]);
   const [matchCount, setMatchCount] = useState(0);
-  const [matchIndex, setMatchIndex] = useState(0);
-  // const [currentIndex, setCurrentIndex] = useState(0);
-  const currentIndex = useRef(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const htmlRef = useRef(null);
-
-  // Update the value without triggering a re-render
-  const updateCurrentIndex = (newValue) => {
-    currentIndex.current = newValue;
-  };
-
-  // Access the current value
-  const getCurrentIndex = () => {
-    return currentIndex.current;
-  };
 
   useEffect(() => {
     document.addEventListener("keydown", detectKeydown, true);
     setHtmlText(htmlRef.current.innerHTML);
+    getSelectedHighlightedText();
 
     return () => {
       document.removeEventListener("keydown", detectKeydown, true);
     };
-  }, []);
+  }, [currentIndex]);
 
   const isOpenInput = () => {
-    setShowInput((prev) => {
-      if (prev) {
-        updateCurrentIndex(0);
-        setMatchCount(0);
-        htmlRef.current.innerHTML = htmlText;
-      }
-      return !prev;
-    });
+    setShowInput((prev) => (prev = !prev));
   };
 
   const detectKeydown = (e) => {
@@ -51,18 +33,11 @@ function App() {
   };
 
   const clearHighlight = () => {
-    // setCurrentIndex(0);
-    updateCurrentIndex(0);
+    setHighlight("");
     setMatchCount(0);
-
-    // Remove the highlight class from all the spans with the "highlight" class
-    const highlightedSpans = htmlRef.current.querySelectorAll(".highlight");
-    while (highlightedSpans.length > 0) {
-      [...highlightedSpans].forEach((span, index) => {
-        span.outerHTML = span.innerHTML;
-      });
-    }
-    return (htmlRef.current.innerHTML = htmlText);
+    setCurrentIndex(0);
+    setMatchRegex([]);
+    htmlRef.current.innerHTML = htmlText;
   };
 
   const getHighlightedText = (highlightText) => {
@@ -87,12 +62,11 @@ function App() {
   };
 
   const getSelectedHighlightedText = () => {
-    console.log(currentIndex);
     const highlightedNodes = htmlRef.current.querySelectorAll(".highlight");
     [...highlightedNodes].forEach((node, index) => {
       node.className = "highlight";
 
-      if (currentIndex.current === index + 1) {
+      if (currentIndex === index + 1) {
         node.className = "highlight selected";
       }
     });
@@ -100,58 +74,42 @@ function App() {
   };
 
   const handleChange = (e) => {
-    updateCurrentIndex(0);
-    setMatchIndex(0);
-    setMatchCount(0);
+    const value = e.target.value;
+    console.log(value);
 
-    const highlightText = e.target.value;
-    setHighlight(highlightText);
-
-    if (highlightText === "" || highlightText === null) {
-      updateCurrentIndex(0);
-      // setCurrentIndex(0);
+    if (value == "" || value == null) {
+      setCurrentIndex(0);
+      setHighlight("");
       setMatchCount(0);
+      setMatchRegex([]);
+      // Remove the highlight class from all the spans with the "highlight" class
+      const highlightedSpans = document.getElementsByClassName("highlight");
+      while (highlightedSpans.length > 0) {
+        const span = highlightedSpans[0];
+        span.outerHTML = span.innerHTML; // Replace the span tag with its content
+      }
       return (htmlRef.current.innerHTML = htmlText);
-
-      // clearHighlight();
     }
 
-    const regex = new RegExp(`(?![^<>]*>)(${highlightText})`, "gi");
-    const highlighted = htmlText.replace(regex, (match, index) => {
-      if (match) {
-        setMatchCount((prev) => prev + 1);
-        return `<span class="highlight">${match}</span>`;
-      }
-    });
-    htmlRef.current.innerHTML = highlighted;
+    setHighlight(value);
+    getHighlightedText(value);
   };
 
   const handleNext = () => {
-    // setCurrentIndex((prev) => prev + 1);
-    updateCurrentIndex(currentIndex.current + 1);
-
-    if (currentIndex.current >= matchCount) {
-      updateCurrentIndex(1);
-      // setCurrentIndex(0);
+    if (currentIndex === matchCount) {
+      setCurrentIndex(0);
     }
-    setMatchIndex(getCurrentIndex());
-
+    setCurrentIndex((prevIndex) => prevIndex + 1);
     getSelectedHighlightedText();
   };
 
   const handlePrev = () => {
-    // setCurrentIndex((prev) => prev - 1);
-    updateCurrentIndex(currentIndex.current - 1);
-
-    if (currentIndex.current <= 0) {
-      // setCurrentIndex(matchCount);
-      updateCurrentIndex(matchCount);
+    if (currentIndex <= 1) {
+      setCurrentIndex(matchCount + 1);
     }
-    setMatchIndex(getCurrentIndex());
-
+    setCurrentIndex((prevIndex) => prevIndex - 1);
     getSelectedHighlightedText();
   };
-  // console.log(htmlRef.current.innerHTML, "==");
 
   return (
     <>
@@ -159,11 +117,11 @@ function App() {
         <Input
           isOpenInput={isOpenInput}
           handleChange={handleChange}
-          highlight={highlight}
           matchCount={matchCount}
+          currentIndex={currentIndex}
+          highlight={highlight}
           handleNext={handleNext}
           handlePrev={handlePrev}
-          matchIndex={matchIndex}
         />
       )}
       <div className="main-container" ref={htmlRef}>

@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from "react";
 import "./Input.css";
 import { RxCaretDown, RxCaretUp, RxCross1 } from "react-icons/rx";
 
-export const Input = ({
+export const InputCopy = ({
   isOpenInput,
   handleChange,
   matchCount,
-  matchIndex,
+  currentIndex,
   highlight,
   handleNext,
   handlePrev,
@@ -19,9 +19,14 @@ export const Input = ({
 
   return (
     <div className="input-container">
-      <input type="text" ref={inputRef} onChange={handleChange} />
+      <input
+        type="text"
+        ref={inputRef}
+        value={highlight}
+        onChange={handleChange}
+      />
       <span className="count">
-        {matchIndex}/{matchCount}
+        {highlight.length === 0 ? 0 : currentIndex}/{matchCount}
       </span>
       <button onClick={handleNext}>
         <RxCaretDown />
