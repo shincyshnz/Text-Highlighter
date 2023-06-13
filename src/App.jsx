@@ -92,25 +92,29 @@ function App() {
   };
 
   const handleNext = () => {
-    updateCurrentIndex(currentIndex.current + 1);
+    if (highlight) {
+      updateCurrentIndex(currentIndex.current + 1);
 
-    if (currentIndex.current >= matchCount) {
-      updateCurrentIndex(1);
+      if (currentIndex.current >= matchCount) {
+        updateCurrentIndex(1);
+      }
+      setMatchIndex(getCurrentIndex());
+
+      getSelectedHighlightedText();
     }
-    setMatchIndex(getCurrentIndex());
-
-    getSelectedHighlightedText();
   };
 
   const handlePrev = () => {
-    updateCurrentIndex(currentIndex.current - 1);
+    if (highlight) {
+      updateCurrentIndex(currentIndex.current - 1);
 
-    if (currentIndex.current <= 0) {
-      updateCurrentIndex(matchCount);
+      if (currentIndex.current <= 0) {
+        updateCurrentIndex(matchCount);
+      }
+      setMatchIndex(getCurrentIndex());
+
+      getSelectedHighlightedText();
     }
-    setMatchIndex(getCurrentIndex());
-
-    getSelectedHighlightedText();
   };
 
   return (
