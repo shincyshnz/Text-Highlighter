@@ -1,6 +1,13 @@
 # KeyWord Finder
 
 This is a Keyword Finder project build using React. With this app you will be able to search keyword
+
+## Demo
+
+[Demo](https://text-highlighter.vercel.app/)
+
+## Screenshots
+
 ![App Screenshot](project-screenshot.png)
 
 ## Features
