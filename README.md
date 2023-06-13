@@ -1,7 +1,7 @@
 # KeyWord Finder
 
 This is a Keyword Finder project build using React. With this app you will be able to search keyword
-[project-screenshot.png]
+![App Screenshot](project-screenshot.png)
 
 ## Features
 
