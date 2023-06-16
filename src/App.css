@@ -3,9 +3,13 @@
   padding-inline: 10px;
   box-sizing: border-box;
 }
+.main-heading {
+  text-align: center;
+  margin-top: 40px;
+}
 
 .main-container {
-  margin: 100px 80px;
+  margin: 50px 80px;
   font-size: 16px;
   text-align: justify;
 }

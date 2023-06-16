@@ -130,6 +130,7 @@ function App() {
           matchIndex={matchIndex}
         />
       )}
+      <h1 className="main-heading">Custom Keyword Finder - Press "Ctrl+f"</h1>
       <div className="main-container" ref={htmlRef}>
         <h1>What is Lorem Ipsum?</h1>
         <p>
